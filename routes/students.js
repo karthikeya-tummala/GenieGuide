@@ -18,12 +18,12 @@ router.post('/', async (req, res) => {
     await student.save();
 
     const token = student.generateAuthToken();
-    res.header('x-auth-token', token).send('Successfully Registered');
+    res.header('x-auth-token', token).send(_.pick(student, ['id', 'name', 'email']));
 });
 
 router.get('/me', async (req, res) => {
     const students = await Student.find();
-    res.send(students);
+    res.send(_.pick(students, ['id', 'name', 'email']));
 });
 
 router.get('/:id', async (req, res) => {
