@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/me', [auth], async (req, res) => {
-    const student = Student.findById(req.user._id).select('-password');
+    const student = await Student.findById(req.user._id).select('-password');
     if(!student) return res.status(404).send('Student with given ID is not found');
     res.send(_.pick(student, ['id', 'name', 'email']));
 });
