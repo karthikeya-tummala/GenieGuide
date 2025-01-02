@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const argon2 = require('argon2');
 const _ = require('lodash');
+const auth = require("../middleware/auth");
 const { Student, validate } = require('../models/student');
 
 router.post('/', async (req, res) => {
@@ -21,13 +22,10 @@ router.post('/', async (req, res) => {
     res.header('x-auth-token', token).send(_.pick(student, ['id', 'name', 'email']));
 });
 
-router.get('/me', async (req, res) => {
-        const student = await Student.findById(req.params.id);
-        if (!student) return res.status(404).send('Student not found.');
-        res.send(student);
-    } catch (err) {
-        res.status(500).send('Something went wrong while fetching the student.');
-    }
+router.get('/me', [auth], async (req, res) => {
+    const student = Student.findById(req.user._id).select('-password');
+    if(!student) return res.status(404).send('Student with given ID is not found');
+    res.send(_.pick(student, ['id', 'name', 'email']));
 });
 
 module.exports = router;
