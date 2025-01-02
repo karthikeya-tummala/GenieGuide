@@ -11,7 +11,7 @@ function auth(req, res, next){
     }
     catch(ex){
         console.log(ex.stack);
-        res.status(500).send('Internal Server Error');
+        res.status(400).send('Invalid Token');
     }
 }
 
