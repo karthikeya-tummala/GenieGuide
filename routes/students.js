@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const argon2 = require('argon2');
+const _ = require('lodash');
 const { Student, validate } = require('../models/student');
 
 router.post('/', async (req, res) => {
@@ -12,11 +13,8 @@ router.post('/', async (req, res) => {
 
     const hashedPassword = await argon2.hash(req.body.password, {type: argon2.argon2id});
 
-    student = new Student({
-        name: req.body.name,
-        email: req.body.email,
-        password: hashedPassword
-    });
+    student = new Student(_.pick(req.body, ['name', 'email']));
+    student.password = hashedPassword;
     await student.save();
 
     const token = student.generateAuthToken();
