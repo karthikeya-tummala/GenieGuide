@@ -19,7 +19,10 @@ router.post('/', async (req, res) => {
     await student.save();
 
     const token = student.generateAuthToken();
-    res.header('x-auth-token', token).send(_.pick(student, ['id', 'name', 'email']));
+    res.header('x-auth-token', token).send({
+        message: 'Successfully registered student',
+        student: _.pick(student, ['id', 'name', 'email']),
+    });
 });
 
 router.get('/me', [auth], async (req, res) => {
