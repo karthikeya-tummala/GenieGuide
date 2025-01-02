@@ -22,12 +22,6 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/me', async (req, res) => {
-    const students = await Student.find();
-    res.send(_.pick(students, ['id', 'name', 'email']));
-});
-
-router.get('/:id', async (req, res) => {
-    try {
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).send('Student not found.');
         res.send(student);
