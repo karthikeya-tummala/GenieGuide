@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const argon2 = require('argon2');
 const { Student, validate } = require('../models/student');
 
 router.post('/', async (req, res) => {
@@ -9,18 +10,17 @@ router.post('/', async (req, res) => {
   let student = await Student.findOne({ email: req.body.email });
   if (student) return res.status(400).send('Student with given email already exists.');
 
+  const hashedPassword = argon2.hash(req.body.password, {type: argon2.argon2id});
+
   student = new Student({
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   });
+  await student.save();
 
-  try {
-    await student.save();
-    res.send({ message: 'Student registered successfully', student });
-  } catch (err) {
-    res.status(500).send('Something went wrong while saving the student.');
-  }
+  const token = student.generateAuthToken();
+  res.header('x-auth-token', token).send('Successfully Registered');
 });
 
 router.get('/', async (req, res) => {
