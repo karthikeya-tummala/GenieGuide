@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
     let student = await Student.findOne({ email: req.body.email });
     if (student) return res.status(400).send('Student with given email already exists.');
 
-    const hashedPassword = argon2.hash(req.body.password, {type: argon2.argon2id});
+    const hashedPassword = await argon2.hash(req.body.password, {type: argon2.argon2id});
 
     student = new Student({
         name: req.body.name,
